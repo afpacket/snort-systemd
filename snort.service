@@ -1,0 +1,15 @@
+[Unit]
+Description=Snort service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/snort
+PIDFile=/var/run/snort/snort1.pid
+ExecStartPre=-/usr/sbin/ethtool -K $INTERFACE rx off tx off gro off lro off
+ExecStartPre=-/usr/sbin/ip link set arp off multicast off promisc on dev $INTERFACE
+ExecStart=/usr/sbin/snort -D -u snort -g snort -c $CONF -i $INTERFACE -R 1 --pid-path=/var/run/snort --no-interface-pidfile --nolock-pidfile
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
